@@ -8,7 +8,7 @@
 
 #include "Process.cpp"
 //Methods
-void sizeCheck(petSize, freeMem){
+void sizeCheck(int petSize, int freeMem){
     if (petSize>freeMem)
         swap(ID, ID2);
     else if (petSize>6144)
@@ -22,7 +22,12 @@ int realToVirtual(posReal){
     
 }
 
-int realToVirtual(posVirtual){
+int realToVirtual(int page, int shift){
+    int rem=page%8;
+    int pos=8*Page.getPageNum;
+    
+    
+
 
 }
 
