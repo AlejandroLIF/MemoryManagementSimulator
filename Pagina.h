@@ -11,8 +11,8 @@ class Page{
         Page(int iPagNum);
         ~Page();        
         
-        int iPagNum();
-        bool getbMod();
+        	int getPagNum();
+        	bool getbMod();
 		bool getbOcup();
 		bool getbRes();
 		bool getbRef();
