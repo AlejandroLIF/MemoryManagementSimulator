@@ -11,13 +11,14 @@
 void sizeCheck(petSize, freeMem){
     if (petSize>freeMem)
         swap(ID, ID2);
-    else if (pet Size>6144)
+    else if (petSize>6144)
         printf("El Tamaño de la peticiones mayor que el tamaño de la memoria \n");
     else
         loadProcess(ID);
 }
 
 int realToVirtual(posReal){
+    
     
 }
 
