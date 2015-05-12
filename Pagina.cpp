@@ -12,6 +12,10 @@ Page::~Page(){
 
 }
 
+int Page::getbPagNum(){
+    return iPagNum;
+}
+
 bool Page::getbMod(){
     return bMod;
 }
