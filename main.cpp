@@ -47,6 +47,7 @@ int main(int argc, char* argv[]){
         istringstream iss(line);
         vector<string> tokens{  istream_iterator<string>{iss},
                                 istream_iterator<string>{}};
+        try{
         char temp = tokens.at(0)[0]; //First char of the first token.
         switch(temp){
             case 'P':
@@ -74,6 +75,10 @@ int main(int argc, char* argv[]){
                 printf("Unknown command \"%c\".\n\tExiting...\n", temp);
                 return -1;
                 break;
+        }
+        }
+        catch (char e){
+            printf("Error\n");
         }
     }
     return 0;   
