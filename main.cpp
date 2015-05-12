@@ -7,7 +7,27 @@
 #include <iterator>
 
 #include "Process.cpp"
+//Methods
+void sizeCheck(petSize, freeMem){
+    if (petSize>freeMem)
+        swap(ID, ID2);
+    else if (pet Size>6144)
+        printf("El Tamaño de la peticiones mayor que el tamaño de la memoria \n");
+    else
+        loadProcess(ID);
+}
 
+int realToVirtual(posReal){
+    
+}
+
+int realToVirtual(posVirtual){
+
+}
+
+void sort(){
+    
+}
 using namespace std;
 
 int main(int argc, char* argv[]){
