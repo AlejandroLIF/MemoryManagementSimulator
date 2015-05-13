@@ -23,7 +23,8 @@ void sizeCheck(int petSize, int freeMem);
 void sort();
 
 int availableReal = REAL_MEMORY_SIZE,
-    availablePaging = PAGING_MEMORY_SIZE;
+    availablePaging = PAGING_MEMORY_SIZE,
+    swapoutcounter = 0;
 
 //These are the page tables
 Page realMemory[REAL_MEMORY_SIZE],
@@ -155,19 +156,30 @@ void accessProcess(int d, int p, bool m){
 }
 
 void freeProcess(int p){
+    //Checks the pages process p has.
+    list<int> assignedPages;
+    for(list<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
+        if((*it).getID() == p){
+            assignedPages = it->getAssignedPages();
+            aasignedPages.setbOcup(false);  
+            //Swapout counting? 
+            if (assignedPages.getbRes==false)
+            swapoutcounter+=1;
+            //free memory
+            
+            //take process to complete process list and add at the end.
+            completedProcesses.push_back(p)
+
+        }
+     if(assignedPages.empty()){
+         printf("Process freed\n");
+     }
+        //Process freed.
+        
     
 }
 
-/* I'm unsure of what this method does...
-void sizeCheck(int petSize, int freeMem){
-    if (petSize>freeMem)
-        swap(ID, ID2);
-    else if (petSize>6144)
-        printf("El Tamaño de la peticiones mayor que el tamaño de la memoria \n");
-    else
-        loadProcess(ID);
-}
-*/
+
 
 int realToVirtual(int posReal){
     
