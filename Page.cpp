@@ -4,14 +4,14 @@ Page::Page(){
     Page(-1);
 }
 
-Page::Page(int iPagNum){
+Page::Page(int iPageNum){
     this->bMod=false;
     this->bOcup=false;
     this->bRes=false;
     this->bRef=false;
 }
 
-int Page::getPagNum(){
+int Page::getPageNum(){
     return iPagNum;
 }
 
@@ -46,4 +46,6 @@ void Page::setbRef(bool bRef){
     this->bRef = bRef;
 }
 
-
+void Page::free(){
+    Page(-1);
+}
