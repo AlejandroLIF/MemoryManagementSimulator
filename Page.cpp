@@ -1,18 +1,17 @@
 #include "Page.h"
 
+Page::Page(){
+    Page(-1);
+}
+
 Page::Page(int iPagNum){
     this->bMod=false;
     this->bOcup=false;
     this->bRes=false;
     this->bRef=false;
-
 }
 
-Page::~Page(){
-
-}
-
-int Page::getbPagNum(){
+int Page::getPagNum(){
     return iPagNum;
 }
 
@@ -32,7 +31,5 @@ bool Page::getbRef(){
     return bRef;
 }
 
-
-}
 
 

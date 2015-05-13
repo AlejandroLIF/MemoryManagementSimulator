@@ -5,14 +5,14 @@
 class Page{
     private:
         bool bMod, bOcup, bRes, bRef;
-		int iPagNum
+		int iPagNum;
         
     public:
+        Page();
         Page(int iPagNum);
-        ~Page();        
         
-        	int getPagNum();
-        	bool getbMod();
+    	int getPagNum();
+    	bool getbMod();
 		bool getbOcup();
 		bool getbRes();
 		bool getbRef();
