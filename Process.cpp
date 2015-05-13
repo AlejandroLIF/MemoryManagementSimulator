@@ -13,6 +13,10 @@ Process::~Process(){
 
 }
 
+int Process::getID(){
+    return ID;
+}
+
 int Process::getSize(){
     return size;
 }
@@ -29,7 +33,7 @@ double Process::getReturnTime(){
     return double(exitTime - arrivalTime) / CLOCKS_PER_SEC;
 }
 
-std::queue<int> Process::getAssignedPages(){
+std::list<int> Process::getAssignedPages(){
     return assignedPages;
 }
 
@@ -38,7 +42,7 @@ void Process::setSize(int size){
 }
 
 void Process::assignPage(int page){
-    assignedPages.push(page);
+    assignedPages.push_back(page);
 }
 
 void Process::end(){

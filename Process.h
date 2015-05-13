@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <iostream>
-#include <queue>
+#include <list>
 #include <time.h>
 
 class Process{
@@ -10,17 +10,18 @@ class Process{
         int pageFaults;
         int swapOut;
         clock_t arrivalTime, exitTime;
-        std::queue<int> assignedPages;
+        std::list<int> assignedPages;
         
     public:
         Process(int ID);
         ~Process();        
         
+        int getID();
         int getSize();
         clock_t getArrivalTime();
         clock_t getExitTime();
         double getReturnTime();
-        std::queue<int> getAssignedPages();
+        std::list<int> getAssignedPages();
         
         void setSize(int size);
         void assignPage(int page);
