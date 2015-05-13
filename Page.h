@@ -13,9 +13,13 @@ class Page{
         
     	int getPagNum();
     	bool getbMod();
-		bool getbOcup();
-		bool getbRes();
-		bool getbRef();
+	bool getbOcup();
+	bool getbRes();
+	bool getbRef();
+	void setbMod(bool bMod);
+	void setbOcup(bool bOcup);
+	void setbRes(bool bRes);
+	void setbRef(bool bRef);
         
         
         void end();
