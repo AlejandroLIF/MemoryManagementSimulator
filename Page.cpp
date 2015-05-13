@@ -31,5 +31,19 @@ bool Page::getbRef(){
     return bRef;
 }
 
+void Page::setbMod(bool bMod){
+    this->bMod = bMod;
+}
+
+void Page::setbOcup(bool bOcup){
+    this->bOcup = bOcup;
+}
+void Page::setbRes(bool bRes){
+    this->bRes = bRes;
+}
+
+void Page::setbRef(bool bRef){
+    this->bRef = bRef;
+}
 
 
