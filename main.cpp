@@ -159,10 +159,10 @@ void freeProcess(int p){
     //Checks the pages process p has.
     list<int> assignedPages;
     for(list<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
-        if((*it).getID() == p){
+        if(it->getID() == p){
             assignedPages = it->getAssignedPages();
-            aasignedPages.setbOcup(false);  
-            //Swapout counting? 
+            aasignedPages.setbOcup(false);
+            //Swapout counting?
             if (assignedPages.getbRes==false)
             swapoutcounter+=1;
             //free memory
@@ -171,14 +171,36 @@ void freeProcess(int p){
             completedProcesses.push_back(p)
 
         }
-     if(assignedPages.empty()){
-         printf("Process freed\n");
-     }
-        //Process freed.
-        
+    }
     
+    if(assignedPages.empty()){
+        printf("Tried to free a process that wasn't loaded to memory.");
+    }
+    else{
+        while(!assignedPages.empty()){
+            int pageNumber = assignedPages.front();
+            assignedPages.pop_front();
+            freePage(pageNumber);
+        }
+    }
+    //Process freed.
 }
 
+bool freePage(int p){
+    for(int i=0; i<REAL_MEMORY_SIZE; i++){
+        if(realMemory[i].getPageNum() == p)}{
+            realMemory[i].free();
+            return true;
+        }
+    }
+    for(int i=0; i<PAGING_MEMORY_SIZE; i++){
+        if(pagingMemory[i].getPageNum() == p){
+            pagingMemory[i].free();
+            return true;
+        }
+    }
+    return false;
+}
 
 
 int realToVirtual(int posReal){
