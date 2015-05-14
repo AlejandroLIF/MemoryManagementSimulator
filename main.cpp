@@ -35,6 +35,7 @@ Page realMemory[REAL_MEMORY_SIZE],
 list<Process>   activeProcesses,
                 completedProcesses;
 
+
 int main(int argc, char* argv[]){
     string line;
     
@@ -120,15 +121,21 @@ void loadProcess(int n, int p){
     while(n){
         //Verify total memory availability
         if(availableReal){
-            //TODO  
+            //TODO 
+            Process.assignPage(p);
             availableReal--;
         }
         else if(availablePaging){
+            list<Page>.sort();
+            Page.setbMod=true;
+            Page.setbRes=true;
+            Page.setbRef=true;
             //TODO
         }
         else{
             //TODO
             //Error: not enough memory.
+            printf("No hay memoria suficiente \n", temp);
             break; //Don't bother trying to assign the rest of the pages, if any.
         }
         n--;
@@ -144,7 +151,6 @@ void accessProcess(int d, int p, bool m){
     for(list<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
         if((*it).getID() == p){
             assignedPages = it->getAssignedPages();
-            break; //No need to iterate through the rest of the processes.
         }
     }
     
@@ -210,6 +216,7 @@ int realToVirtual(int posReal){
 }
 
 void sort(){
+    
     
 }
 
