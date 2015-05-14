@@ -35,8 +35,8 @@ int availableReal = REAL_MEMORY_SIZE,
 
 
 //These are the page tables
-Page realMemory[REAL_MEMORY_SIZE],
-     pagingMemory[PAGING_MEMORY_SIZE];
+bool realMemory[REAL_MEMORY_SIZE],
+     virtualMemory[PAGING_MEMORY_SIZE];
 Page pageTable[REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE];
 
 //These are the process lists
@@ -130,33 +130,47 @@ void loadProcess(int n, int p){
     
     // Verifies if there are enough pages in memory for the process to be loaded.
     if(n <= REAL_MEMORY_SIZE && n < availableReal + availablePaging){
-        //While not all pages have been assigned.
-        while(n--){
-            //Verify real memory availability
-            if(!availableReal){
-                vector<Page> sortedPages(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
-                sort(sortedPages.begin(), sortedPages.end(), compareProcess);
-                
-                //TODO: move sortedPages[0] to virtualMemory;
-                
-                availablePaging--;
-                availableReal++;
+        vector<Page> sortedPages(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
+        sort(sortedPages.begin(), sortedPages.end(), compareProcess);
+        
+        //Free realMemory if there is not enough available        
+        for(int i = n - availableReal; i>0; i++){
+            int pageNum = sortedPages[i].getPageNum();
+            pageTable[pageNum].setbRes(false);
+            realMemory[pageTable[pageNum].getAddress()] = false;
+            pageTable[pageNum].setbMod(false);
+            pageTable[pageNum].setbRef(false);
+            
+            for(int j = 0; j<VIRTUAL_MEMORY_SIZE; j++){
+                if(!virtualMemory[j]){
+                    virtualMemory[j] = true;
+                    pageTable[pageNum].setAddress(j);
+                    break;
+                }
             }
-            //At this point, there is always enough real memory.
-            // Looks for an empty space in real memory
-            vector<Page> sortedPages(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
-            //TODO: verify sort
-            sort(sortedPages.begin(), sortedPages.end(), compareProcess);
-            int i=-1;
-            do{
-                ++i;
-            }while(pageTable[i].getbOcup());
-            realMemory[i] = Page(pageIDgenerator);
-            realMemory[i].setbOcup(true);
-            realMemory[i].setbRes(true);
-            process.assignPage(pageIDgenerator++);
-            availableReal--;
+            availableReal++;
+            availableVirtual--;
         }
+        //Refresh the sortedPages vector.
+        sortedPages = vector<Page>(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
+        sort(sortedPages.begin(), sortedPages.end(), sortOcup);
+        for(int i=0; i<n; i++){
+            int pageNum = sortedPages[i].getPageNum();
+            pageTable[pageNum].setbRes(true);
+            
+            for(int j = 0; j<REAL_MEMORY_SIZE; j++){
+                if(!realMemory[j]){
+                    pageTable[pageNum].setAddress(j);
+                    realMemory[j] = true;
+                    break;
+                }
+            }
+            
+            pageTable[pageNum].setbMod(false);
+            pageTable[pageNum].setbRef(false);
+            process.assignPage(pageNum);
+        }
+        process.setArrivalTime();
         activeProcesses.push_back(process);
     }
     else{
