@@ -27,7 +27,7 @@ bool compareProcess(Page pageOne, Page pageTwo);
 void reset(int start);
 void fin();
 
-
+int pageIDgenerator = 0;
 
 int availableReal = REAL_MEMORY_SIZE,
     availablePaging = PAGING_MEMORY_SIZE,
@@ -134,7 +134,14 @@ void loadProcess(int n, int p){
             //Verify total memory availability
             if(availableReal){
                 //TODO: save the page to a location in realMemory[]
-                process.assignPage(p);
+
+                // Looks for an empty space in real memory
+                int i=-1;
+                do{
+                    ++i;
+                }while(realMemory[i].getbRes())
+                realMemory[i].setbRes(true);
+                process.assignPage(pageIDgenerator++);
                 availableReal--;
             }
             else{
