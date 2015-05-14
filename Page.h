@@ -9,7 +9,7 @@ class Page{
         
     public:
         Page();
-        Page(int iPagNum);
+        Page(int iPageNum);
 
         int getPageNum();
         bool getbMod();

@@ -5,6 +5,7 @@ Page::Page(){
 }
 
 Page::Page(int iPageNum){
+    this->iPageNum = iPageNum;
     this->bMod=false;
     this->bOcup=false;
     this->bRes=false;
@@ -12,7 +13,7 @@ Page::Page(int iPageNum){
 }
 
 int Page::getPageNum(){
-    return iPagNum;
+    return iPageNum;
 }
 
 bool Page::getbMod(){
