@@ -23,7 +23,7 @@ void accessProcess(int d, int p, bool m);
 void freeProcess(int p);
 bool freePage(int p);
 void sizeCheck(int petSize, int freeMem);
-bool compareProcess();
+bool compareProcess(Page pageOne, Page pageTwo);
 void reset(int start);
 void fin();
 
@@ -133,13 +133,12 @@ void loadProcess(int n, int p){
         while(n--){
             //Verify total memory availability
             if(availableReal){
-                //TODO 
+                //TODO: save the page to a location in realMemory[]
                 process.assignPage(p);
                 availableReal--;
             }
             else{
-                //vector<Page> memory(realMemory, realMemory + REAL_MEMORY_SIZE);
-                sort(realMemory, realMemory + REAL_MEMORY_SIZE, compareProcess());
+                sort(realMemory, realMemory + REAL_MEMORY_SIZE, compareProcess);
 
                 //TODO: swap(realMemory with pageMemory);
             }
