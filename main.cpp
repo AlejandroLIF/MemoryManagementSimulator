@@ -352,7 +352,7 @@ void swap(Process P){
 }
 
 void sortOcup(){
-    pageTable.sort(pageTable, pageTable + REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE, compareOcup);
+    sort(pageTable, pageTable + REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE, compareOcup);
 }
 
 void compareOcup(Page pageOne, Page pageTwo){
