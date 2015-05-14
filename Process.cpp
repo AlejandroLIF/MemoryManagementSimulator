@@ -42,6 +42,10 @@ std::list<int> Process::getAssignedPages(){
     return assignedPages;
 }
 
+void Process:setArrivalTime(){
+    arrivalTime = clock();
+}
+
 void Process::setSize(int size){
     this->size = size;
 }

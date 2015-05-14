@@ -25,6 +25,7 @@ class Process{
         std::list<int> getAssignedPages();
         
         void setSize(int size);
+        void setArrivalTime();
         void assignPage(int page);
         void end();
 };
