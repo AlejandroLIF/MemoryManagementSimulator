@@ -23,8 +23,11 @@ void accessProcess(int d, int p, bool m);
 void freeProcess(int p);
 bool freePage(int p);
 void sizeCheck(int petSize, int freeMem);
-void sort();
 bool compareProcess();
+void reset(int start);
+void fin();
+
+
 
 int availableReal = REAL_MEMORY_SIZE,
     availablePaging = PAGING_MEMORY_SIZE,
@@ -43,10 +46,7 @@ int main(int argc, char* argv[]){
     string line;
     std::clock_t start;
     start = std::clock();
-    
-
-    }
-    
+        
     if(argc != 2){
         printf("Usage: %s, input.txt\n", argv[0]);
         return -1;
@@ -125,6 +125,7 @@ void loadProcess(int n, int p){
     //Translate bytes needed to pages needed.
     //See http://www.cs.nott.ac.uk/~rcb/G51MPC/slides/NumberLogic.pdf for CEIL function explanation.
     n = (n + PAGE_SIZE - 1)/PAGE_SIZE;
+    Process process = Process(p, n);
     
     // Verifies if there are enough pages in real memory for the process to be loaded.
     if(n <= REAL_MEMORY_SIZE && n < availableReal + availablePaging){
@@ -136,20 +137,17 @@ void loadProcess(int n, int p){
                 process.assignPage(p);
                 availableReal--;
             }
-            else(availablePaging){
-                //TODO: sort(realMemory); 
-                sort(realMemory, realMemory + REAL_MEMORY_SIZE, compareProcess);
+            else{
+                //vector<Page> memory(realMemory, realMemory + REAL_MEMORY_SIZE);
+                sort(realMemory, realMemory + REAL_MEMORY_SIZE, compareProcess());
 
                 //TODO: swap(realMemory with pageMemory);
-                
-                // This is wrong: list<Page>.sort();
             }
         }
     }
     else{
         //TODO Error: not enough memory.
         printf("No hay memoria suficiente! \n");
-        break; //Don't bother trying to assign the rest of the pages, if any.
     }
 }
 
@@ -227,18 +225,13 @@ int realToVirtual(int posReal){
     
 }
 
-void sort(){
-    sort(realMemory, realMemory + REAL_MEMORY_SIZE, compareProcess);
-}
-
 void reset(int start){
-        if (start=>5000) //Define number of cycles for reset
-            for (list<Page>::iterator it = pages.begin(); it != pages.end(); it++){
-                *it.setbMod(false);
-                *it.setbRef(false);
-        }
-        else 
-        return 0;
+        if (start >= 5000) //Define number of cycles for reset
+            for(int i=0; i<REAL_MEMORY_SIZE; i++){
+                realMemory[i].setbMod(false);
+                realMemory[i].setbRef(false);
+            }
+        
 }
 
 bool compareProcess(Page pageOne, Page pageTwo){
@@ -269,12 +262,17 @@ void fin(){
     printf("Fin\n");
     list<int> assignedPages;
         for(list<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
-            printf("\n",*it.getReturnTime());
-            printf("\n",*it.getPageFaults());
-            printf("\n",*it.getSwapOut());
-            printf("\n",*it.getID());
-            printf("\n",*it.getSize());
-            printf("\n",*it.getAssignedPages());
+            printf("Process ID:%i\n",it->getID());
+            printf("\tReturn time: %f\n",it->getReturnTime());
+            printf("\tPage faults: %i\n",it->getPageFaults());
+            printf("\tSwap outs: %i\n",it->getSwapOut());
+            printf("\tSize: %i\n",it->getSize());
+            printf("\tAssigned pages: ");
+            assignedPages = it->getAssignedPages();
+            
+            for(list<int>::iterator pit = assignedPages.begin(); pit != assignedPages.end(); pit++){
+                printf("%i ", *pit);
+            }
         }     
 }
 
