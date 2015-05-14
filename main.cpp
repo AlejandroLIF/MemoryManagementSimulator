@@ -102,7 +102,7 @@ int main(int argc, char* argv[]){
             case 'F':
             case 'f':
                 //No need to try/catch. No more input is processed.
-                fin()
+                fin();
                 
                 break;
             case 'E':
