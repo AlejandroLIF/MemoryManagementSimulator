@@ -17,6 +17,8 @@ class Process{
         
         int getID();
         int getSize();
+        int getPageFaults();
+        int getSwapOut();
         clock_t getArrivalTime();
         clock_t getExitTime();
         double getReturnTime();
