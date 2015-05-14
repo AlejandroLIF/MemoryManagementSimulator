@@ -295,6 +295,7 @@ void fin(){
 
 void swap(){
     int i=0;
+    int pageID = realMemory[0].getPageNum();
     // Frees the more adequate space in real memory 
     realMemory[0].setbRes(false);
     realMemory[0].setbOcup(false);
@@ -305,6 +306,6 @@ void swap(){
     do{
         ++i;
     }while(pagingMemory[i].getbOcup());
-    pagingMemory[i] = Page(pageIDgenerator);
+    pagingMemory[i] = Page(pageID);
 }
 
