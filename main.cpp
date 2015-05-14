@@ -162,7 +162,7 @@ void loadProcess(int n, int p){
         }
         //Refresh the sortedPages vector.
         sortedPages = vector<Page>(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
-        sort(sortedPages.begin(), sortedPages.end(), sortOcup);
+        sort(sortedPages.begin(), sortedPages.end(), compareOcup);
         for(int i=0; i<n; i++){
             int pageNum = sortedPages[i].getPageNum();
             pageTable[pageNum].setbRes(true);
@@ -349,10 +349,6 @@ void swap(Process P){
         pagingMemory[i] = Page(pageID);
         printf("\tSwapped Pages: ",pagingMemory[i]);
     }
-}
-
-void sortOcup(){
-    sort(pageTable, pageTable + REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE, compareOcup);
 }
 
 void compareOcup(Page pageOne, Page pageTwo){
