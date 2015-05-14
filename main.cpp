@@ -187,49 +187,48 @@ void loadProcess(int n, int p){
     }
 }
 
-void accessProcess(int d, int p, bool m){
+bool accessProcess(int d, int p, bool m){
     //Translate virtual address to real address.
     int pageNum = d / PAGE_SIZE;
+    int realPageNum;
     //The displacement is ignored for the purposes of this exercise.
     
     list<int> assignedPages;
-    for(list<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
-        if((*it).getID() == p){
+    list<Process>::iterator it;
+    for(it = activeProcesses.begin(); it != activeProcesses.end(); it++){
+        if(it->getID() == p){
             assignedPages = it->getAssignedPages();
             break;    
         }
     }
     
     if(it == activeProcesses.end()){
-        //ERROR: Process not found.
+        printf("Error: process \"#i\" not found!\n", p);
+        return false;
     }
     else{
-        
-        //Checks if the page is in real memory
-        for(list<Page>::iterator it = assignedPages.begin(); it != assignedPages.end(); it++){
-            if(it->getPageNum() == pageNum){
-                it->setbRef(true);
-                if(m)
-                    it->setbMod(true);
-                break;
-            }
+        //Search for the specified page.
+        try{
+        realPageNum = assignedPages[pageNum].getPageNum(); //Translate virtual address to real address.
         }
-        //Page not on  virtual memory.
-        else {
-        swap(*it);
-        int i=-1;
-        do{
-            ++i;
-        }while(realMemory[i].getbOcup());
-            realMemory[i] = Page(pageIDgenerator);
-            realMemory[i].setbOcup(true);
-            realMemory[i].setbRes(true);
-            process.assignPage(pageIDgenerator++);
-            availableReal--;
-
+        catch(...){
+            printf("Error! The specified virtual address was not found.\n");
+            return false; //If index out of bounds, page was not found. return false.
         }
+        //Found the page!
+        //If the page is in virtual memory
+        if(!pageTable[realPageNum].getbRes()){
+            vector<Page> sortedPages(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
+            sort(sortedPages.begin(), sortedPages.end(), compareProcess);
+            swap(sortedPages[0].getPageNum()); //Send the selected page to disk storage and free real memory.
         }
+        //If the page is in real memory
+        pageTable[realPageNum].setbRes(true);
+        pageTable[realPageNum].setbRef(true);
+        if(m)
+            pageTable[realPageNum].setbMod(true);
     }
+    return true;
 }
 
 void freeProcess(int p){
