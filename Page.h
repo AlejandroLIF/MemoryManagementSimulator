@@ -5,7 +5,7 @@
 class Page{
     private:
         bool bMod, bOcup, bRes, bRef;
-		const int iPageNum
+		int iPageNum
 		int address;
         
     public:
@@ -18,12 +18,12 @@ class Page{
         bool getbOcup();
         bool getbRes();
         bool getbRef();
+        void setPageNum(int pageNum);
         void setAddress(int address);
         void setbMod(bool bMod);
         void setbOcup(bool bOcup);
         void setbRes(bool bRes);
         void setbRef(bool bRef);
-        void free();
         
         void end();
 };

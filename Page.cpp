@@ -37,6 +37,10 @@ bool Page::getbRef(){
     return bRef;
 }
 
+void Page::setPageNum(int iPageNum){
+    this->iPageNum = iPageNum;
+}
+
 void Page::setAddress(int address){
     this.address = address;
 }
@@ -54,8 +58,4 @@ void Page::setbRes(bool bRes){
 
 void Page::setbRef(bool bRef){
     this->bRef = bRef;
-}
-
-void Page::free(){
-    Page(-1);
 }
