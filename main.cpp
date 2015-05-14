@@ -128,7 +128,7 @@ void loadProcess(int n, int p){
     n = (n + PAGE_SIZE - 1)/PAGE_SIZE;
     
     // Verifies if there are enough pages in real memory for the process to be loaded.
-    if(n <= availableReal){
+    if(n <= REAL_MEMORY_SIZE && n < availableReal + availablePaging){
         //While not all pages have been assigned.
         while(n--){
             //Verify total memory availability
