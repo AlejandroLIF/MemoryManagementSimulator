@@ -42,7 +42,7 @@ void Page::setPageNum(int iPageNum){
 }
 
 void Page::setAddress(int address){
-    this.address = address;
+    this->address = address;
 }
 
 void Page::setbMod(bool bMod){

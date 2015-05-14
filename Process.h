@@ -10,7 +10,7 @@ class Process{
         int pageFaults;
         int swapOut;
         clock_t arrivalTime, exitTime;
-        std::list<int> assignedPages;
+        std::vector<int> assignedPages;
         
     public:
         Process(int ID, int size);   
@@ -22,7 +22,7 @@ class Process{
         clock_t getArrivalTime();
         clock_t getExitTime();
         double getReturnTime();
-        std::list<int> getAssignedPages();
+        std::vector<int> getAssignedPages();
         
         void setSize(int size);
         void setArrivalTime();

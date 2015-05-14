@@ -19,7 +19,7 @@
 using namespace std;
 
 void loadProcess(int n, int p);
-void accessProcess(int d, int p, bool m);
+bool accessProcess(int d, int p, bool m);
 void freeProcess(int p);
 bool freePage(int p);
 void sizeCheck(int petSize, int freeMem);
@@ -27,7 +27,7 @@ bool compareProcess(Page pageOne, Page pageTwo);
 void resetBRef(int start);
 void fin();
 void sort2();
-void compareOcup(Page pageOne, Page pageTwo);
+bool compareOcup(Page pageOne, Page pageTwo);
 int swap(Process P);
 
 int pageIDgenerator = 0;
@@ -46,7 +46,7 @@ Page pageTable[REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE];
 
 
 //These are the process lists
-list<Process>   activeProcesses,
+vector<Process>   activeProcesses,
                 completedProcesses;
 
 int main(int argc, char* argv[]){
@@ -151,7 +151,7 @@ void loadProcess(int n, int p){
             pageTable[pageNum].setbMod(false);
             pageTable[pageNum].setbRef(false);
             
-            for(int j = 0; j<VIRTUAL_MEMORY_SIZE; j++){
+            for(int j = 0; j<PAGING_MEMORY_SIZE; j++){
                 if(!virtualMemory[j]){
                     virtualMemory[j] = true;
                     pageTable[pageNum].setAddress(j);
@@ -159,7 +159,7 @@ void loadProcess(int n, int p){
                 }
             }
             availableReal++;
-            availableVirtual--;
+            availablePaging--;
         }
         //Refresh the sortedPages vector.
         sortedPages = vector<Page>(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
@@ -194,8 +194,8 @@ bool accessProcess(int d, int p, bool m){
     int realPageNum;
     //The displacement is ignored for the purposes of this exercise.
     
-    list<int> assignedPages;
-    list<Process>::iterator it;
+    vector<int> assignedPages;
+    vector<Process>::iterator it;
     for(it = activeProcesses.begin(); it != activeProcesses.end(); it++){
         if(it->getID() == p){
             assignedPages = it->getAssignedPages();
@@ -204,14 +204,13 @@ bool accessProcess(int d, int p, bool m){
     }
     
     if(it == activeProcesses.end()){
-        printf("Error: process \"#i\" not found!\n", p);
+        printf("Error: process \"%i\" not found!\n", p);
         return false;
     }
     else{
-<<<<<<< HEAD
         //Search for the specified page.
         try{
-        realPageNum = assignedPages[pageNum].getPageNum(); //Translate virtual address to real address.
+            realPageNum = assignedPages[pageNum]; //Translate virtual address to real address.
         }
         catch(...){
             printf("Error! The specified virtual address was not found.\n");
@@ -222,7 +221,7 @@ bool accessProcess(int d, int p, bool m){
         if(!pageTable[realPageNum].getbRes()){
             vector<Page> sortedPages(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
             sort(sortedPages.begin(), sortedPages.end(), compareProcess);
-            swap(sortedPages[0].getPageNum()); //Send the selected page to disk storage and free real memory.
+            swap(*(sortedPages[0])); //Send the selected page to disk storage and free real memory.
         }
         //If the page is in real memory
         pageTable[realPageNum].setbRes(true);
@@ -235,8 +234,8 @@ bool accessProcess(int d, int p, bool m){
 
 void freeProcess(int p){
     //Checks the pages process p has.
-    list<int> assignedPages;
-    list<Process>::iterator it;
+    vector<int> assignedPages;
+    vector<Process>::iterator it;
     for(it = activeProcesses.begin(); it != activeProcesses.end(); it++){
         if(it->getID() == p){
             assignedPages = it->getAssignedPages();
@@ -256,8 +255,8 @@ void freeProcess(int p){
         //Remove process from the active list.
         activeProcesses.erase(it);
         while(!assignedPages.empty()){
-            int pageNumber = assignedPages.front();
-            assignedPages.pop_front();
+            int pageNumber = assignedPages.back();
+            assignedPages.pop_back();
             freePage(pageNumber);
         }
     }
@@ -267,13 +266,13 @@ void freeProcess(int p){
 //#TODO: print freed pages along with process ID.
 bool freePage(int p){
     try{
-        if(pageTable[i].getbRes()){
-            realMemory[pageTable[i].getPageNum()] = false;
+        if(pageTable[p].getbRes()){
+            realMemory[pageTable[p].getPageNum()] = false;
             availableReal++;
         }
         else{
-            virtualMemory[pageTable[i].getPageNum()] = false;
-            availableVirtual++;
+            virtualMemory[pageTable[p].getPageNum()] = false;
+            availablePaging++;
         }
         pageTable[p].setbOcup(false);
     }
@@ -285,9 +284,8 @@ bool freePage(int p){
 
 void resetBRef(int start){
         if (start >= 5000) //Define number of cycles for reset
-            for(int i=0; i<REAL_MEMORY_SIZE; i++){
-                realMemory[i].setbMod(false);
-                realMemory[i].setbRef(false);
+            for(int i=0; i<REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE; i++){
+                pageTable[i].setbRef(false);
             }
         
 }
@@ -318,8 +316,8 @@ bool compareProcess(Page pageOne, Page pageTwo){
 
 void fin(){
     printf("Fin\n");
-    list<int> assignedPages;
-        for(list<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
+    vector<int> assignedPages;
+        for(vector<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
             printf("Process ID:%i\n",it->getID());
             printf("\tReturn time: %f\n",it->getReturnTime());
             printf("\tPage faults: %i\n",it->getPageFaults());
@@ -328,7 +326,7 @@ void fin(){
             printf("\tAssigned pages: ");
             assignedPages = it->getAssignedPages();
             
-            for(list<int>::iterator pit = assignedPages.begin(); pit != assignedPages.end(); pit++){
+            for(vector<int>::iterator pit = assignedPages.begin(); pit != assignedPages.end(); pit++){
                 printf("%i ", *pit);
             }
         }     
@@ -356,7 +354,7 @@ int swap(Process p){
     }*/
 }
 
-void compareOcup(Page pageOne, Page pageTwo){
+bool compareOcup(Page pageOne, Page pageTwo){
     if(pageOne.getbOcup() == false && pageTwo.getbOcup() == true){
         return true;
     }

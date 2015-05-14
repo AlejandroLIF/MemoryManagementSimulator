@@ -38,11 +38,11 @@ double Process::getReturnTime(){
     return double(exitTime - arrivalTime) / CLOCKS_PER_SEC;
 }
 
-std::list<int> Process::getAssignedPages(){
+std::vector<int> Process::getAssignedPages(){
     return assignedPages;
 }
 
-void Process:setArrivalTime(){
+void Process::setArrivalTime(){
     arrivalTime = clock();
 }
 

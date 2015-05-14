@@ -5,7 +5,7 @@
 class Page{
     private:
         bool bMod, bOcup, bRes, bRef;
-		int iPageNum
+		int iPageNum;
 		int address;
         
     public:
