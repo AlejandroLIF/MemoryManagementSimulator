@@ -145,16 +145,17 @@ void loadProcess(int n, int p){
             int i=-1;
             do{
                 ++i;
-            }while(realMemory[i].getbOcup())
+            }while(realMemory[i].getbOcup());
             realMemory[i] = Page(pageIDgenerator);
+            realMemory[i].setbOcup(true);
+            realMemory[i].setbRes(true);
             process.assignPage(pageIDgenerator++);
             availableReal--;
         }
         activeProcesses.push_back(process);
     }
     else{
-        //TODO Error: not enough memory.
-        printf("No hay memoria suficiente! \n");
+        printf("No hay memoria suficiente para cargar el proceso! \n");
     }
 }
 
