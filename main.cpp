@@ -20,7 +20,6 @@ using namespace std;
 void loadProcess(int n, int p);
 void accessProcess(int d, int p, bool m);
 void freeProcess(int p);
-bool freePage(int p);
 void sizeCheck(int petSize, int freeMem);
 void sort();
 
@@ -36,7 +35,7 @@ Page realMemory[REAL_MEMORY_SIZE],
 //These are the process lists
 list<Process>   activeProcesses,
                 completedProcesses;
-list<Page>      pages
+list<Page)      pages
 
 
 int main(int argc, char* argv[]){
@@ -103,13 +102,13 @@ int main(int argc, char* argv[]){
             case 'F':
             case 'f':
                 //No need to try/catch. No more input is processed.
-                
+                fin()
                 
                 break;
             case 'E':
             case 'e':
                 //No need to try/catch. No more input is processed.
-                
+                printf("Unknown command \"%c\".\n\tExiting...\n", temp);
                 break;
             default:
                 //Any type of input in the default case is an error.
@@ -125,24 +124,27 @@ void loadProcess(int n, int p){
     //Translate bytes needed to pages needed.
     //See http://www.cs.nott.ac.uk/~rcb/G51MPC/slides/NumberLogic.pdf for CEIL function explanation.
     n = (n + PAGE_SIZE - 1)/PAGE_SIZE;
-    Process process = Process(p, n);
+    
     //While not all pages have been assigned.
     while(n){
         //Verify total memory availability
         if(availableReal){
             //TODO 
-            process.assignPage(p);
+            Process.assignPage(p);
             availableReal--;
         }
         else if(availablePaging){
-            //TODO: sort(realMemory);
-            //TODO: swap(realMemory with pageMemory);
-            
-            // This is wrong: list<Page>.sort();
+            list<Page>.sort();
+            Process.getAssignedPages();
+            Page.setbMod=true;
+            Page.setbRes=true;
+            Page.setbRef=true;
+            //TODO
         }
         else{
-            //TODO Error: not enough memory.
-            printf("No hay memoria suficiente! \n");
+            //TODO
+            //Error: not enough memory.
+            printf("No hay memoria suficiente \n", temp);
             break; //Don't bother trying to assign the rest of the pages, if any.
         }
         n--;
@@ -172,50 +174,27 @@ void accessProcess(int d, int p, bool m){
 void freeProcess(int p){
     //Checks the pages process p has.
     list<int> assignedPages;
-    list<Process>::iterator it;
-    for(it = activeProcesses.begin(); it != activeProcesses.end(); it++){
-        if(it->getID() == p){
+    for(list<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
+        if((*it).getID() == p){
             assignedPages = it->getAssignedPages();
-            break;
+            aasignedPages.setbOcup(false);  
+            //Swapout counting? 
+            if (assignedPages.getbRes==false)
+            swapoutcounter+=1;
+            //free memory
+            
+            //take process to complete process list and add at the end.
+            completedProcesses.push_back(p)
+
         }
-    }
+     if(assignedPages.empty()){
+         printf("Process freed\n");
+     }
+        //Process freed.
+        
     
-    if(it == activeProcesses.end()){
-        printf("Tried to free a process that wasn't loaded to memory.");
-    }
-    else{
-        //Swap out should not be increased because pages aren't swapped. They are just marked as "free".
-        //Set exit time.
-        it->end();
-        //Move process to the completed list.
-        completedProcesses.push_back(*it);
-        //Remove process from the active list.
-        activeProcesses.erase(it);
-        while(!assignedPages.empty()){
-            int pageNumber = assignedPages.front();
-            assignedPages.pop_front();
-            freePage(pageNumber);
-        }
-    }
-    //Process freed.
 }
 
-//#TODO: print freed pages along with process ID.
-bool freePage(int p){
-    for(int i=0; i<REAL_MEMORY_SIZE; i++){
-        if(realMemory[i].getPageNum() == p){
-            realMemory[i].free();
-            return true;
-        }
-    }
-    for(int i=0; i<PAGING_MEMORY_SIZE; i++){
-        if(pagingMemory[i].getPageNum() == p){
-            pagingMemory[i].free();
-            return true;
-        }
-    }
-    return false;
-}
 
 
 int realToVirtual(int posReal){
@@ -236,5 +215,20 @@ void reset(int start){
         }
         else 
         return 0;
+}
+
+void fin(){
+    printf("Fin\n");
+    list<int> assignedPages;
+        for(list<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
+            printf("\n",*it.getReturnTime());
+            printf("\n",*it.getPageFaults());
+            printf("\n",*it.getSwapOut());
+            printf("\n",*it.getID());
+            printf("\n",*it.getSize());
+            printf("\n",*it.getAssignedPages());
+        }     
+            
+    
 }
 
