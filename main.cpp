@@ -36,7 +36,7 @@ Page realMemory[REAL_MEMORY_SIZE],
 //These are the process lists
 list<Process>   activeProcesses,
                 completedProcesses;
-list<Page)      pages
+list<Page>      pages
 
 
 int main(int argc, char* argv[]){
