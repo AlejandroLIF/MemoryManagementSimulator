@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iterator>
 #include <list>
+#include <ctime>
 
 #include "Process.cpp"
 #include "Page.cpp"
@@ -27,6 +28,7 @@ int availableReal = REAL_MEMORY_SIZE,
     availablePaging = PAGING_MEMORY_SIZE,
     swapoutcounter = 0;
 
+
 //These are the page tables
 Page realMemory[REAL_MEMORY_SIZE],
      pagingMemory[PAGING_MEMORY_SIZE];
@@ -34,10 +36,16 @@ Page realMemory[REAL_MEMORY_SIZE],
 //These are the process lists
 list<Process>   activeProcesses,
                 completedProcesses;
+list<Page)      pages
 
 
 int main(int argc, char* argv[]){
     string line;
+    std::clock_t start;
+    start = std::clock();
+    
+
+    }
     
     if(argc != 2){
         printf("Usage: %s, input.txt\n", argv[0]);
@@ -54,7 +62,8 @@ int main(int argc, char* argv[]){
         istringstream iss(line);
         vector<string> tokens{  istream_iterator<string>{iss},
                                 istream_iterator<string>{}};
-                                
+        
+        reset(start);                        
         char temp = tokens.at(0)[0]; //First char of the first token.
         switch(temp){
             case 'P':
@@ -130,7 +139,6 @@ void loadProcess(int n, int p){
             //TODO: swap(realMemory with pageMemory);
             
             // This is wrong: list<Page>.sort();
-            
         }
         else{
             //TODO Error: not enough memory.
@@ -216,7 +224,17 @@ int realToVirtual(int posReal){
 }
 
 void sort(){
+
     
-    
+}
+
+void reset(int start){
+        if (start=>5000) //Define number of cycles for reset
+            for (list<Page>::iterator it = pages.begin(); it != pages.end(); it++){
+                *it.setbMod(false);
+                *it.setbRef(false);
+        }
+        else 
+        return 0;
 }
 
