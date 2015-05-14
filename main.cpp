@@ -137,7 +137,7 @@ void loadProcess(int n, int p){
                 
                 //TODO: move realMemory[0] to virtualMemory;
                 
-                availableVirtual--;
+                availablePaging--;
                 availableReal++;
             }
             //At this point, there is always enough real memory.
