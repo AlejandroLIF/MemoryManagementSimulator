@@ -24,7 +24,7 @@ void freeProcess(int p);
 bool freePage(int p);
 void sizeCheck(int petSize, int freeMem);
 bool compareProcess(Page pageOne, Page pageTwo);
-void reset(int start);
+void resetBRef(int start);
 void fin();
 void sort2();
 void compareOcup(Page pageOne, Page pageTwo);
@@ -39,7 +39,10 @@ int availableReal = REAL_MEMORY_SIZE,
 //These are the page tables
 bool realMemory[REAL_MEMORY_SIZE],
      virtualMemory[PAGING_MEMORY_SIZE];
+/*  pageTable MUST BE IMMUTABLE. IT SHOULD NEVER BE REORDERED */
 Page pageTable[REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE];
+/*  pageTable MUST BE IMMUTABLE. IT SHOULD NEVER BE REORDERED */    
+
 
 //These are the process lists
 list<Process>   activeProcesses,
@@ -49,7 +52,11 @@ int main(int argc, char* argv[]){
     string line;
     std::clock_t start;
     start = std::clock();
-        
+    
+    for(int i=0; i<REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE; i++){
+        pageTable[i].setPageNum(i);
+    }
+    
     if(argc != 2){
         printf("Usage: %s, input.txt\n", argv[0]);
         return -1;
@@ -66,7 +73,7 @@ int main(int argc, char* argv[]){
         vector<string> tokens{  istream_iterator<string>{iss},
                                 istream_iterator<string>{}};
         
-        reset(start);                        
+        resetBRef(start);                        
         char temp = tokens.at(0)[0]; //First char of the first token.
         switch(temp){
             case 'P':
@@ -258,28 +265,24 @@ void freeProcess(int p){
 
 //#TODO: print freed pages along with process ID.
 bool freePage(int p){
-    for(int i=0; i<REAL_MEMORY_SIZE; i++){
-        if(realMemory[i].getPageNum() == p){
-            realMemory[i].free();
-            return true;
+    try{
+        if(pageTable[i].getbRes()){
+            realMemory[pageTable[i].getPageNum()] = false;
+            availableReal++;
         }
-    }
-    for(int i=0; i<PAGING_MEMORY_SIZE; i++){
-        if(pagingMemory[i].getPageNum() == p){
-            pagingMemory[i].free();
-            return true;
+        else{
+            virtualMemory[pageTable[i].getPageNum()] = false;
+            availableVirtual++;
         }
+        pageTable[p].setbOcup(false);
     }
-    return false;
+    catch(...){
+        return false;
+    }
+    return true;
 }
 
-
-int realToVirtual(int posReal){
-    
-    
-}
-
-void reset(int start){
+void resetBRef(int start){
         if (start >= 5000) //Define number of cycles for reset
             for(int i=0; i<REAL_MEMORY_SIZE; i++){
                 realMemory[i].setbMod(false);
