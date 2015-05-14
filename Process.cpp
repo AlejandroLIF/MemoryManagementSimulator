@@ -17,6 +17,15 @@ int Process::getSize(){
     return size;
 }
 
+int Process::getPageFaults(){
+    return pageFaults;
+}
+
+int Process::getSwapOut(){
+    return swapOut;
+}
+
+
 clock_t Process::getArrivalTime(){
     return arrivalTime;
 }
