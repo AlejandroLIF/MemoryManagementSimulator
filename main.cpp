@@ -28,7 +28,7 @@ void resetBRef(int start);
 void fin();
 void sort2();
 bool compareOcup(Page pageOne, Page pageTwo);
-int swap(Process P);
+int swap();
 
 int pageIDgenerator = 0;
 
@@ -219,9 +219,7 @@ bool accessProcess(int d, int p, bool m){
         //Found the page!
         //If the page is in virtual memory
         if(!pageTable[realPageNum].getbRes()){
-            vector<Page> sortedPages(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
-            sort(sortedPages.begin(), sortedPages.end(), compareProcess);
-            swap(*(sortedPages[0])); //Send the selected page to disk storage and free real memory.
+            swap(); //Send the selected page to disk storage and free real memory.
         }
         //If the page is in real memory
         pageTable[realPageNum].setbRes(true);
@@ -332,26 +330,11 @@ void fin(){
         }     
 }
 
-int swap(Process p){
+int swap(){
     vector<Page> sortedPages(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
     sort(sortedPages.begin(), sortedPages.end(), compareProcess);
 
-    
     return sortedPages[0].getPageNum(); 
-    /*
-    // Frees the more adequate space in real memory 
-    pageTable[0].setbRes(false);
-    pageTable[0].setbOcup(false);
-    pageTable[0].setbRef(false);
-    pageTable[0].setbMod(false);
-
-    // Looks for a free spot in paging memory
-    do{
-        ++i;
-    }while(pageTable[i].getbOcup());{
-        pagingMemory[i] = Page(pageID);
-        printf("\tSwapped Pages: ", pagingMemory[i]);
-    }*/
 }
 
 bool compareOcup(Page pageOne, Page pageTwo){
