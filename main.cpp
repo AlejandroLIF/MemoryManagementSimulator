@@ -170,10 +170,11 @@ void accessProcess(int d, int p, bool m){
             assignedPages = it->getAssignedPages();
             
             //Checks if the page is in real memory or virtual memory
-            if(assignedPages.getbRes()){
-                assignedPages.setbRef(true);
+            for(list<Page>::iterator ite = assignedPages.begin(); ite != assignedPages.end(); ite++){
+            if((*ite).getbRes()){
+                (*ite).setbRef(true);
                 if(m)
-                    assignedPages.setbMod(true);
+                    (*ite).setbMod(true);
             }
             //Page not on  virtual memory.
             else {
