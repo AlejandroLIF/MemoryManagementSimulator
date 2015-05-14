@@ -145,7 +145,7 @@ void loadProcess(int n, int p){
             int i=-1;
             do{
                 ++i;
-            }while(realMemory[i].getbOcup())
+            }while(realMemory[i].getbOcup());
             realMemory[i] = Page(pageIDgenerator);
             process.assignPage(pageIDgenerator++);
             availableReal--;
@@ -290,5 +290,20 @@ void fin(){
                 printf("%i ", *pit);
             }
         }     
+}
+
+void swap(){
+    int i=0;
+    // Frees the more adequate space in real memory 
+    realMemory[0].setbRes(false);
+    realMemory[0].setbOcup(false);
+    realMemory[0].setbRef(false);
+    realMemory[0].setbMod(false);
+
+    // Looks for a free spot in paging memory
+    do{
+        ++i;
+    }while(pagingMemory[i].getbOcup());
+    pagingMemory[i] = Page(pageIDgenerator);
 }
 
