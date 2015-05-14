@@ -175,7 +175,21 @@ void accessProcess(int d, int p, bool m){
                 if(m)
                     assignedPages.setbMod(true);
             }
+            //Page not on  virtual memory.
             else {
+            swap(*it);
+            int i=-1;
+            do{
+                ++i;
+            }while(realMemory[i].getbOcup());
+                realMemory[i] = Page(pageIDgenerator);
+                realMemory[i].setbOcup(true);
+                realMemory[i].setbRes(true);
+                process.assignPage(pageIDgenerator++);
+                availableReal--;
+            
+        }
+            
 
         }
     }
@@ -293,7 +307,7 @@ void fin(){
         }     
 }
 
-void swap(){
+void swap(Process P){
     int i=0;
     int pageID = realMemory[0].getPageNum();
     // Frees the more adequate space in real memory 
@@ -305,7 +319,9 @@ void swap(){
     // Looks for a free spot in paging memory
     do{
         ++i;
-    }while(pagingMemory[i].getbOcup());
-    pagingMemory[i] = Page(pageID);
+    }while(pagingMemory[i].getbOcup());{
+        pagingMemory[i] = Page(pageID);
+        printf("\tSwapped Pages: ",pagingMemory[i]);
+    }
 }
 
