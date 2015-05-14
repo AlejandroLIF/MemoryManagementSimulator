@@ -10,10 +10,15 @@ Page::Page(int iPageNum){
     this->bOcup=false;
     this->bRes=false;
     this->bRef=false;
+    this->address = 0;
 }
 
 int Page::getPageNum(){
     return iPageNum;
+}
+
+int Page::getAddress(){
+    return address;
 }
 
 bool Page::getbMod(){
@@ -30,6 +35,10 @@ bool Page::getbRes(){
 
 bool Page::getbRef(){
     return bRef;
+}
+
+void Page::setAddress(int address){
+    this.address = address;
 }
 
 void Page::setbMod(bool bMod){
