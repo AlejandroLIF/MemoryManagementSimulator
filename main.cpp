@@ -7,6 +7,7 @@
 #include <iterator>
 #include <list>
 #include <ctime>
+#include <algorithm>
 
 #include "Process.cpp"
 #include "Page.cpp"
@@ -23,6 +24,7 @@ void freeProcess(int p);
 bool freePage(int p);
 void sizeCheck(int petSize, int freeMem);
 void sort();
+bool compareProcess();
 
 int availableReal = REAL_MEMORY_SIZE,
     availablePaging = PAGING_MEMORY_SIZE,
@@ -127,25 +129,28 @@ void loadProcess(int n, int p){
     n = (n + PAGE_SIZE - 1)/PAGE_SIZE;
     Process process = Process(p, n);
     //While not all pages have been assigned.
-    while(n){
-        //Verify total memory availability
-        if(availableReal){
-            //TODO 
-            process.assignPage(p);
-            availableReal--;
+    if(n <= availableReal){
+        while(n--){
+            //Verify total memory availability
+            if(availableReal){
+                //TODO 
+                process.assignPage(p);
+                availableReal--;
+            }
+            else(availablePaging){
+                //TODO: sort(realMemory); 
+                sort(realMemory, realMemory + REAL_MEMORY_SIZE, compareProcess);
+
+                //TODO: swap(realMemory with pageMemory);
+                
+                // This is wrong: list<Page>.sort();
+            }
         }
-        else if(availablePaging){
-            //TODO: sort(realMemory);
-            //TODO: swap(realMemory with pageMemory);
-            
-            // This is wrong: list<Page>.sort();
-        }
-        else{
-            //TODO Error: not enough memory.
-            printf("No hay memoria suficiente! \n");
-            break; //Don't bother trying to assign the rest of the pages, if any.
-        }
-        n--;
+    }
+    else{
+        //TODO Error: not enough memory.
+        printf("No hay memoria suficiente! \n");
+        break; //Don't bother trying to assign the rest of the pages, if any.
     }
 }
 
@@ -224,8 +229,7 @@ int realToVirtual(int posReal){
 }
 
 void sort(){
-
-    
+    sort(realMemory, realMemory + REAL_MEMORY_SIZE, compareProcess);
 }
 
 void reset(int start){
@@ -236,5 +240,29 @@ void reset(int start){
         }
         else 
         return 0;
+}
+
+bool compareProcess(Page pageOne, Page pageTwo){
+    // Returns true if pageOne has residence bit off and pageTwo on
+    if(pageOne.getbRes() == false && pageTwo.getbRes() == true){
+        return true;
+    }
+    // Enters else if, if both pages have the residence bit off
+    else if(pageOne.getbRes() == false && pageTwo.getbRes() == false){
+        // Returns true if pageOne has both residence and reference bits off and pageTwo having residence bit off and reference bit on.
+        if(pageOne.getbRef() == false && pageTwo.getbRef() == true){
+            return true;
+        }
+        //Enters else if, if both pages have both residence and reference bits off. 
+        else if(pageOne.getbRef() == false && pageTwo.getbRef() == false){
+            //Returns true if pageOne has residence, reference and modification bits off while pageTwo has both residence and reference bits off and modification bit on.
+            if(pageOne.getbMod() == false && pageTwo.getbMod() == true){
+                return true;
+            }
+        }
+    }
+    else{
+        return false;
+    }
 }
 
