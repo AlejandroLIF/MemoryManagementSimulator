@@ -24,6 +24,7 @@ void freeProcess(int p);
 bool freePage(int p);
 void sizeCheck(int petSize, int freeMem);
 bool compareProcess(Page pageOne, Page pageTwo);
+bool compareSwapOut(Page pageOne, Page pageTwo);
 void resetBRef(int start);
 void fin();
 void sort2();
@@ -113,18 +114,18 @@ int main(int argc, char* argv[]){
                 break;
             case 'F':
             case 'f':
-                //No need to try/catch. No more input is processed.
+                //No need to try/catch. No more input is processed.    
+                printf("Fin\n");
                 fin();
-                
                 break;
             case 'E':
             case 'e':
                 //No need to try/catch. No more input is processed.
-                printf("Unknown command \"%c\".\n\tExiting...\n", temp);
+                printf("Byebye \"%c\".\n", temp);
                 break;
             default:
                 //Any type of input in the default case is an error.
-                printf("Unknown command \"%c\".\n\tExiting...\n", temp);
+                printf("Unknown command \"%c\".\n", temp);
                 
                 break;
         }
@@ -220,6 +221,14 @@ bool accessProcess(int d, int p, bool m){
         //If the page is in virtual memory
         if(!pageTable[realPageNum].getbRes()){
             swap(); //Send the selected page to disk storage and free real memory.
+            for(int i=0; i<REAL_MEMORY_SIZE; i++){
+                if(!realMemory[i]){
+                    realMemory[i] = true;
+                    pageTable[realPageNum].setAddress(i);
+                    availableReal--;
+                    break;
+                }
+            }
         }
         //If the page is in real memory
         pageTable[realPageNum].setbRes(true);
@@ -242,7 +251,7 @@ void freeProcess(int p){
     }
     
     if(it == activeProcesses.end()){
-        printf("Tried to free a process that wasn't loaded to memory.");
+        printf("Tried to free a process that wasn't loaded to memory.\n");
     }
     else{
         //Swap out should not be increased because pages aren't swapped. They are just marked as "free".
@@ -252,11 +261,13 @@ void freeProcess(int p){
         completedProcesses.push_back(*it);
         //Remove process from the active list.
         activeProcesses.erase(it);
+        printf("Freeing process %i:\n", p);
         while(!assignedPages.empty()){
             int pageNumber = assignedPages.back();
             assignedPages.pop_back();
             freePage(pageNumber);
         }
+        printf("\n");
     }
     //Process freed.
 }
@@ -273,6 +284,7 @@ bool freePage(int p){
             availablePaging++;
         }
         pageTable[p].setbOcup(false);
+        printf("%i ", p);
     }
     catch(...){
         return false;
@@ -312,28 +324,59 @@ bool compareProcess(Page pageOne, Page pageTwo){
     }
 }
 
-void fin(){
-    printf("Fin\n");
-    vector<int> assignedPages;
-        for(vector<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
-            printf("Process ID:%i\n",it->getID());
-            printf("\tReturn time: %f\n",it->getReturnTime());
-            printf("\tPage faults: %i\n",it->getPageFaults());
-            printf("\tSwap outs: %i\n",it->getSwapOut());
-            printf("\tSize: %i\n",it->getSize());
-            printf("\tAssigned pages: ");
-            assignedPages = it->getAssignedPages();
-            
-            for(vector<int>::iterator pit = assignedPages.begin(); pit != assignedPages.end(); pit++){
-                printf("%i ", *pit);
+bool compareSwapOut(Page pageOne, Page pageTwo){
+    if( pageOne.getbRes() && !pageTwo.getbRes())
+        return true;
+    else if( pageOne.getbRes() && pageTwo.getbRes() ){
+        if( pageOne.getbRef() && !pageTwo.getbRef() ){
+            return false;
+        }
+        else if( pageOne.getbRef() && pageTwo.getbRef() ){
+            if( pageOne.getbMod() && !pageTwo.getbMod() ){
+                return false;
             }
-        }     
+        }
+    }
+    
+    return true;
+}
+
+void fin(){
+    vector<int> assignedPages;
+    for(vector<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
+        printf("Process ID:%i\n",it->getID());
+        printf("\tReturn time: %f\n",it->getReturnTime());
+        printf("\tPage faults: %i\n",it->getPageFaults());
+        printf("\tSwap outs: %i\n",it->getSwapOut());
+        printf("\tSize: %i\n",it->getSize());
+        printf("\tAssigned pages: ");
+        assignedPages = it->getAssignedPages();
+        
+        for(vector<int>::iterator pit = assignedPages.begin(); pit != assignedPages.end(); pit++){
+            printf("%i ", *pit);
+        }
+    }
+    printf("\n\n");
 }
 
 int swap(){
     vector<Page> sortedPages(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
-    sort(sortedPages.begin(), sortedPages.end(), compareProcess);
-
+    sort(sortedPages.begin(), sortedPages.end(), compareSwapOut);
+    int pageNum = sortedPages[0].getPageNum();
+    int memoryAddress = pageTable[pageNum].getAddress();
+    
+    for(int i=0; i<PAGING_MEMORY_SIZE; i++){
+        if(!virtualMemory[i]){
+            realMemory[memoryAddress] = false;
+            availableReal++;
+            pageTable[pageNum].setAddress(i);
+            virtualMemory[i] = true;
+            availablePaging--;
+            break;
+        }
+    }
+    pageTable[pageNum].setbRes(false);
+    printf("Page \"%i\" swapped out.\n", pageNum);
     return sortedPages[0].getPageNum(); 
 }
 
