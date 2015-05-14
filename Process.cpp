@@ -1,16 +1,12 @@
 #include "Process.h"
 
-Process::Process(int ID){
-    this->size = 0;
+Process::Process(int ID, int size){
     this->ID = ID;
+    this->size = size;
     this->pageFaults = 0;
     this->swapOut = 0;
     this->arrivalTime = clock();
     this->exitTime = clock();
-}
-
-Process::~Process(){
-
 }
 
 int Process::getID(){

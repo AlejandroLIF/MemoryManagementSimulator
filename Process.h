@@ -13,8 +13,7 @@ class Process{
         std::list<int> assignedPages;
         
     public:
-        Process(int ID);
-        ~Process();        
+        Process(int ID, int size);   
         
         int getID();
         int getSize();
