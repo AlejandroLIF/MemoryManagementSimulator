@@ -159,6 +159,15 @@ void accessProcess(int d, int p, bool m){
     for(list<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
         if((*it).getID() == p){
             assignedPages = it->getAssignedPages();
+            
+            //Checks if the page is in real memory or virtual memory
+            if(assignedPages.getbRes()){
+                assignedPages.setbRef(true);
+                if(m)
+                    assignedPages.setbMod(true);
+            }
+            else {
+
         }
     }
     
