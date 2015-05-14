@@ -137,7 +137,7 @@ void loadProcess(int n, int p){
                 
                 //TODO: move realMemory[0] to virtualMemory;
                 
-                availableVirtual--;
+                availablePaging--;
                 availableReal++;
             }
             //At this point, there is always enough real memory.
@@ -147,14 +147,15 @@ void loadProcess(int n, int p){
                 ++i;
             }while(realMemory[i].getbOcup());
             realMemory[i] = Page(pageIDgenerator);
+            realMemory[i].setbOcup(true);
+            realMemory[i].setbRes(true);
             process.assignPage(pageIDgenerator++);
             availableReal--;
         }
         activeProcesses.push_back(process);
     }
     else{
-        //TODO Error: not enough memory.
-        printf("No hay memoria suficiente! \n");
+        printf("No hay memoria suficiente para cargar el proceso! \n");
     }
 }
 
