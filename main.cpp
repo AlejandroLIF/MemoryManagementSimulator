@@ -127,29 +127,30 @@ void loadProcess(int n, int p){
     n = (n + PAGE_SIZE - 1)/PAGE_SIZE;
     Process process = Process(p, n);
     
-    // Verifies if there are enough pages in real memory for the process to be loaded.
+    // Verifies if there are enough pages in memory for the process to be loaded.
     if(n <= REAL_MEMORY_SIZE && n < availableReal + availablePaging){
         //While not all pages have been assigned.
         while(n--){
-            //Verify total memory availability
-            if(availableReal){
-                //TODO: save the page to a location in realMemory[]
-
-                // Looks for an empty space in real memory
-                int i=-1;
-                do{
-                    ++i;
-                }while(realMemory[i].getbRes())
-                realMemory[i].setbRes(true);
-                process.assignPage(pageIDgenerator++);
-                availableReal--;
-            }
-            else{
+            //Verify real memory availability
+            if(!availableReal){
                 sort(realMemory, realMemory + REAL_MEMORY_SIZE, compareProcess);
-
-                //TODO: swap(realMemory with pageMemory);
+                
+                //TODO: move realMemory[0] to virtualMemory;
+                
+                availableVirtual--;
+                availableReal++;
             }
+            //At this point, there is always enough real memory.
+            // Looks for an empty space in real memory
+            int i=-1;
+            do{
+                ++i;
+            }while(realMemory[i].getbOcup())
+            realMemory[i] = Page(pageIDgenerator);
+            process.assignPage(pageIDgenerator++);
+            availableReal--;
         }
+        activeProcesses.push_back(process);
     }
     else{
         //TODO Error: not enough memory.
