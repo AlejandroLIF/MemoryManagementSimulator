@@ -19,6 +19,7 @@ using namespace std;
 void loadProcess(int n, int p);
 void accessProcess(int d, int p, bool m);
 void freeProcess(int p);
+bool freePage(int p);
 void sizeCheck(int petSize, int freeMem);
 void sort();
 
