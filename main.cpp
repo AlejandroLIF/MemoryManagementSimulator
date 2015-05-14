@@ -210,7 +210,7 @@ void sort(){
 void reset(int start){
         if (start=>5000) //Define number of cycles for reset
         for (list<Page>::iterator it = pages.begin(); it != pages.end(); it++){
-            Page.setbMod(false);
-            Page.setbRef(false);
+            *it.setbMod(false);
+            *it.setbRef(false);
 }
 
