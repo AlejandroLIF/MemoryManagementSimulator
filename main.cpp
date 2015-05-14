@@ -26,6 +26,8 @@ void sizeCheck(int petSize, int freeMem);
 bool compareProcess(Page pageOne, Page pageTwo);
 void reset(int start);
 void fin();
+void sort2();
+void compareOcup(Page pageOne, Page pageTwo);
 
 int pageIDgenerator = 0;
 
@@ -346,3 +348,15 @@ void swap(Process P){
     }
 }
 
+void sortOcup(){
+    pageTable.sort(pageTable, pageTable + REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE, compareOcup);
+}
+
+void compareOcup(Page pageOne, Page pageTwo){
+    if(pageOne.getbOcup() == false && pageTwo.getbOcup() == true){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
