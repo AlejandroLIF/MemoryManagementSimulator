@@ -27,42 +27,33 @@ bool compareProcess(Page pageOne, Page pageTwo);
 bool compareSwapOut(Page pageOne, Page pageTwo);
 void resetBRef(int start);
 void fin();
-void sort2();
 bool compareOcup(Page pageOne, Page pageTwo);
 int swap();
 
-int pageIDgenerator = 0;
-
 int availableReal = REAL_MEMORY_SIZE,
-    availablePaging = PAGING_MEMORY_SIZE,
+    availableVirtual = PAGING_MEMORY_SIZE,
     swapoutcounter = 0;
 
-
-//These are the page tables
+//These arrays represent the memory locations.
 bool realMemory[REAL_MEMORY_SIZE],
      virtualMemory[PAGING_MEMORY_SIZE];
-/*  pageTable MUST BE IMMUTABLE. IT SHOULD NEVER BE REORDERED */
+     
 Page pageTable[REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE];
-/*  pageTable MUST BE IMMUTABLE. IT SHOULD NEVER BE REORDERED */    
-
 
 //These are the process lists
-vector<Process>   activeProcesses,
+vector<Process> activeProcesses,
                 completedProcesses;
 
 int main(int argc, char* argv[]){
     string line;
     std::clock_t start;
-    start = std::clock();
     
-    for(int i=0; i<REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE; i++){
-        pageTable[i].setPageNum(i);
-    }
-    
+    //Receive the input file as argument.
     if(argc != 2){
         printf("Usage: %s, input.txt\n", argv[0]);
         return -1;
     }
+    //Open the input file
     ifstream inputFile(argv[1]);
     if(!inputFile.is_open()){
         printf("Unable to open file \"%s\"!\n\
@@ -70,12 +61,23 @@ int main(int argc, char* argv[]){
         return -1;
     }
     
+    start = std::clock();
+    
+    //Initialize the page table assigining their ID to all pages.
+    for(int i=0; i<REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE; i++){
+        pageTable[i].setPageNum(i);
+    }
+    
+    //Read the input file
     while(getline(inputFile, line)){
+        //Tokenize input
         istringstream iss(line);
         vector<string> tokens{  istream_iterator<string>{iss},
                                 istream_iterator<string>{}};
         
-        resetBRef(start);                        
+        //Reference bit reset timer.
+        resetBRef(start);
+        
         char temp = tokens.at(0)[0]; //First char of the first token.
         switch(temp){
             case 'P':
@@ -86,7 +88,7 @@ int main(int argc, char* argv[]){
                     loadProcess(n, p);
                 }
                 catch(...){
-                
+                    //TODO: error reporting message.
                 }
                 break;
             case 'A':
@@ -99,7 +101,7 @@ int main(int argc, char* argv[]){
                     accessProcess(d, p, m);
                 }
                 catch(...){
-                
+                    //TODO: error reporting message.
                 }
                 break;
             case 'L':
@@ -109,7 +111,7 @@ int main(int argc, char* argv[]){
                     freeProcess(p);
                 }
                 catch(...){
-                
+                    //TODO: error reporting message.
                 }
                 break;
             case 'F':
@@ -122,6 +124,8 @@ int main(int argc, char* argv[]){
             case 'e':
                 //No need to try/catch. No more input is processed.
                 printf("Byebye \"%c\".\n", temp);
+                //Exit
+                return 0;
                 break;
             default:
                 //Any type of input in the default case is an error.
@@ -140,19 +144,21 @@ void loadProcess(int n, int p){
     Process process = Process(p, n);
     
     // Verifies if there are enough pages in memory for the process to be loaded.
-    if(n <= REAL_MEMORY_SIZE && n < availableReal + availablePaging){
+    if(n <= REAL_MEMORY_SIZE && n < availableReal + availableVirtual){
+        //The pages are sorted to determine which should be the first to be swapped.
         vector<Page> sortedPages(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
         sort(sortedPages.begin(), sortedPages.end(), compareProcess);
         
-        //Free realMemory if there is not enough available        
+        //Free realMemory if there is not enough available
         for(int i = n - availableReal; i>0; i++){
             int pageNum = sortedPages[i].getPageNum();
             pageTable[pageNum].setbRes(false);
             realMemory[pageTable[pageNum].getAddress()] = false;
             pageTable[pageNum].setbMod(false);
             pageTable[pageNum].setbRef(false);
-            
+                
             for(int j = 0; j<PAGING_MEMORY_SIZE; j++){
+                //Find the first empty virtual memory location.
                 if(!virtualMemory[j]){
                     virtualMemory[j] = true;
                     pageTable[pageNum].setAddress(j);
@@ -160,15 +166,19 @@ void loadProcess(int n, int p){
                 }
             }
             availableReal++;
-            availablePaging--;
+            availableVirtual--;
         }
+        
         //Refresh the sortedPages vector.
         sortedPages = vector<Page>(pageTable, pageTable + (REAL_MEMORY_SIZE + PAGING_MEMORY_SIZE));
         sort(sortedPages.begin(), sortedPages.end(), compareOcup);
+        
+        //For each required page that needs to be assigned.
         for(int i=0; i<n; i++){
             int pageNum = sortedPages[i].getPageNum();
             pageTable[pageNum].setbRes(true);
             
+            //Find the first location in real memory and assign it.
             for(int j = 0; j<REAL_MEMORY_SIZE; j++){
                 if(!realMemory[j]){
                     pageTable[pageNum].setAddress(j);
@@ -179,10 +189,13 @@ void loadProcess(int n, int p){
             
             pageTable[pageNum].setbMod(false);
             pageTable[pageNum].setbRef(false);
+            //Add the page to the process' page list.
             process.assignPage(pageNum);
         }
         process.setArrivalTime();
+        //Add the process to the active processes list.
         activeProcesses.push_back(process);
+        
     }
     else{
         printf("No hay memoria suficiente para cargar el proceso! \n");
@@ -197,6 +210,7 @@ bool accessProcess(int d, int p, bool m){
     
     vector<int> assignedPages;
     vector<Process>::iterator it;
+    //Find the required page in the process' pages
     for(it = activeProcesses.begin(); it != activeProcesses.end(); it++){
         if(it->getID() == p){
             assignedPages = it->getAssignedPages();
@@ -204,12 +218,13 @@ bool accessProcess(int d, int p, bool m){
         }
     }
     
+    //If page not found
     if(it == activeProcesses.end()){
         printf("Error: process \"%i\" not found!\n", p);
         return false;
     }
     else{
-        //Search for the specified page.
+        //Translate the virtual address.
         try{
             realPageNum = assignedPages[pageNum]; //Translate virtual address to real address.
         }
@@ -221,6 +236,8 @@ bool accessProcess(int d, int p, bool m){
         //If the page is in virtual memory
         if(!pageTable[realPageNum].getbRes()){
             swap(); //Send the selected page to disk storage and free real memory.
+
+            //Find the first location in real memory and assign it to the accessed page.
             for(int i=0; i<REAL_MEMORY_SIZE; i++){
                 if(!realMemory[i]){
                     realMemory[i] = true;
@@ -243,6 +260,7 @@ void freeProcess(int p){
     //Checks the pages process p has.
     vector<int> assignedPages;
     vector<Process>::iterator it;
+    //Find the requested process in the activeProcesses list.
     for(it = activeProcesses.begin(); it != activeProcesses.end(); it++){
         if(it->getID() == p){
             assignedPages = it->getAssignedPages();
@@ -261,6 +279,8 @@ void freeProcess(int p){
         completedProcesses.push_back(*it);
         //Remove process from the active list.
         activeProcesses.erase(it);
+        
+        //Clear out all of the process' pages.
         printf("Freeing process %i:\n", p);
         while(!assignedPages.empty()){
             int pageNumber = assignedPages.back();
@@ -272,7 +292,6 @@ void freeProcess(int p){
     //Process freed.
 }
 
-//#TODO: print freed pages along with process ID.
 bool freePage(int p){
     try{
         if(pageTable[p].getbRes()){
@@ -281,7 +300,7 @@ bool freePage(int p){
         }
         else{
             virtualMemory[pageTable[p].getPageNum()] = false;
-            availablePaging++;
+            availableVirtual++;
         }
         pageTable[p].setbOcup(false);
         printf("%i ", p);
@@ -371,7 +390,7 @@ int swap(){
             availableReal++;
             pageTable[pageNum].setAddress(i);
             virtualMemory[i] = true;
-            availablePaging--;
+            availableVirtual--;
             break;
         }
     }
