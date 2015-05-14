@@ -21,6 +21,7 @@ using namespace std;
 void loadProcess(int n, int p);
 void accessProcess(int d, int p, bool m);
 void freeProcess(int p);
+bool freePage(int p);
 void sizeCheck(int petSize, int freeMem);
 void sort();
 bool compareProcess();
@@ -177,27 +178,50 @@ void accessProcess(int d, int p, bool m){
 void freeProcess(int p){
     //Checks the pages process p has.
     list<int> assignedPages;
-    for(list<Process>::iterator it = activeProcesses.begin(); it != activeProcesses.end(); it++){
-        if((*it).getID() == p){
+    list<Process>::iterator it;
+    for(it = activeProcesses.begin(); it != activeProcesses.end(); it++){
+        if(it->getID() == p){
             assignedPages = it->getAssignedPages();
-            aasignedPages.setbOcup(false);  
-            //Swapout counting? 
-            if (assignedPages.getbRes==false)
-            swapoutcounter+=1;
-            //free memory
-            
-            //take process to complete process list and add at the end.
-            completedProcesses.push_back(p)
-
+            break;
         }
-     if(assignedPages.empty()){
-         printf("Process freed\n");
-     }
-        //Process freed.
-        
+    }
     
+    if(it == activeProcesses.end()){
+        printf("Tried to free a process that wasn't loaded to memory.");
+    }
+    else{
+        //Swap out should not be increased because pages aren't swapped. They are just marked as "free".
+        //Set exit time.
+        it->end();
+        //Move process to the completed list.
+        completedProcesses.push_back(*it);
+        //Remove process from the active list.
+        activeProcesses.erase(it);
+        while(!assignedPages.empty()){
+            int pageNumber = assignedPages.front();
+            assignedPages.pop_front();
+            freePage(pageNumber);
+        }
+    }
+    //Process freed.
 }
 
+//#TODO: print freed pages along with process ID.
+bool freePage(int p){
+    for(int i=0; i<REAL_MEMORY_SIZE; i++){
+        if(realMemory[i].getPageNum() == p){
+            realMemory[i].free();
+            return true;
+        }
+    }
+    for(int i=0; i<PAGING_MEMORY_SIZE; i++){
+        if(pagingMemory[i].getPageNum() == p){
+            pagingMemory[i].free();
+            return true;
+        }
+    }
+    return false;
+}
 
 
 int realToVirtual(int posReal){
